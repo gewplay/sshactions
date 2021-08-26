@@ -23,11 +23,18 @@ jobs:
       with:
         timezone: Asia/Shanghai
 
+    - name: cmd
+      run: |
+        echo 1
+        exit 0
+        echo 2
+        echo "strDate=$(TZ=UTC-8 date +%Y-%m-%d)" >> $GITHUB_ENV
+
           
     - name: Start SSH via tmate
       uses: klever1988/ssh2actions@main
       with:
-        mode: ngrok
+        mode: ssh
       # Send connection info to Telegram (optional)
       # You can find related documents here: https://core.telegram.org/bots
       env:
@@ -36,6 +43,7 @@ jobs:
         SSH_PASSWORD: ${{secrets.SSH_PASSWORD}}
         SSH_PUBKEY: ${{secrets.SSH_PUBKEY}}
         NGROK_TOKEN: ${{secrets.NGROK_TOKEN}}
+        TUNNEL_HOST: ${{secrets.TUNNEL_HOST}}
 
 
 
