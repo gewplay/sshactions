@@ -1,9 +1,10 @@
 name: ssh
-on: repository_dispatch
+on: 
+  workflow_dispatch:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
     
