@@ -20,7 +20,7 @@ jobs:
     - name: SSH connection to Actions
       uses: gewplay/debugger-action@master
       
-    - name: Deliver buildinfo
+    - name: update
       uses: actions/upload-artifact@v2
       with:
         name: upload
