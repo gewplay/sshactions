@@ -18,7 +18,11 @@ jobs:
 
     
     - name: SSH connection to Actions
-      uses: gewplay/debugger-action@master
+      uses: gewplay/ssh2actions@main
+      with:
+        mode: tmate
+      env:
+        DINGTALK: ${{ secrets.DINGTALK }}
       
     - name: Update File
       uses: actions/upload-artifact@v2
