@@ -32,6 +32,14 @@ jobs:
         DINGTALK: ${{ secrets.DINGTALK }}
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         TUNNEL_HOST: ${{ secrets.TUNNEL_HOST }}
+        
+    - name: make
+      run: |
+       cd ~/lede
+       make download -j3
+       make -j3||make -j3 V=s||make -j1||make -j1 V=s||true
+       tar zcvf bin.tar.gz ./bin
+       mv bin.tar.gz ~/update/
       
     - name: Update File
       uses: actions/upload-artifact@v2
