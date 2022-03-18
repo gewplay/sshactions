@@ -1,10 +1,23 @@
 name: ssh
 on: 
   workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'ssh'
+        default: 'false'
+        required: true
+      device:
+        description: 'select device to build'
+        default: 'x86'
+        required: true
 jobs:
   test:
     name: Test
     runs-on: ubuntu-18.04
+    env:
+      SSH_ACTIONS: ${{ github.event.client_payload.ssh || github.event.inputs.ssh || 'false' }}
+      DEVICE: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
+      
     steps:
     - uses: actions/checkout@v1
     
@@ -24,7 +37,14 @@ jobs:
        ./scripts/feeds update -a
        ./scripts/feeds install -a
        
+    - name: config
+      if: env.SSH_ACTIONS == 'false'
+      run: |
+        cd ~/work/sshactions/sshactions
+        cp ~/work/sshactions/sshactions/$DEVICE.config ~/lede/config
+        
     - name: SSH connection to Actions
+      if: env.SSH_ACTIONS == 'true'
       uses: gewplay/ssh2actions@main
       with:
         mode: ssh
