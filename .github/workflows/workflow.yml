@@ -9,7 +9,7 @@ on:
       device:
         description: 'select device to build'
         default: 'x86'
-        required: true
+        required: false
 jobs:
   test:
     name: Test
