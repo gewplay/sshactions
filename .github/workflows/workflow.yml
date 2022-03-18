@@ -20,6 +20,7 @@ jobs:
       run: |
        cd ~/
        git clone https://github.com/coolsnowwolf/lede
+       cd ~/lede/
        ./scripts/feeds update -a
        ./scripts/feeds install -a
        
