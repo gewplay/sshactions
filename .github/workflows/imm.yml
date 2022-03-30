@@ -1,4 +1,4 @@
-name: ssh
+name: imm
 on: 
   workflow_dispatch:
     inputs:
