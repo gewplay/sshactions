@@ -32,7 +32,7 @@ jobs:
     - name: git
       run: |
        cd ~/
-       git clone -b $BRANCH --single-branch https://github.com/immortalwrt/immortalwrt lede
+       git clone -b openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt lede
        cd ~/lede/
        ./scripts/feeds update -a
        ./scripts/feeds install -a
