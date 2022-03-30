@@ -8,7 +8,7 @@ on:
         required: true
       device:
         description: 'select device to build'
-        default: 'x86'
+        default: 'r2s'
         required: false
 jobs:
   test:
@@ -41,7 +41,7 @@ jobs:
       if: env.SSH_ACTIONS == 'false'
       run: |
         cd ~/work/sshactions/sshactions
-        cp ~/work/sshactions/sshactions/$DEVICE.config ~/lede/.config
+        cp ~/work/sshactions/sshactions/$DEVICE.im.config ~/lede/.config
         
     - name: SSH connection to Actions
       if: env.SSH_ACTIONS == 'true'
