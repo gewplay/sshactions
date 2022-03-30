@@ -1,0 +1,72 @@
+name: ssh
+on: 
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'ssh'
+        default: 'false'
+        required: true
+      device:
+        description: 'select device to build'
+        default: 'x86'
+        required: false
+jobs:
+  test:
+    name: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
+    runs-on: ubuntu-18.04
+    env:
+      SSH_ACTIONS: ${{ github.event.client_payload.ssh || github.event.inputs.ssh || 'false' }}
+      DEVICE: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
+      
+    steps:
+    - uses: actions/checkout@v1
+    
+    - name: Update system
+      run: |
+       sudo sysctl vm.swappiness=0
+       nohup sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk &
+       sudo -E apt update
+       nohup sudo -E apt -y --no-install-recommends install pv jq sshpass build-essential cmake asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano python2.7 python3 python3-pip python-ply python3-ply haveged lrzsz device-tree-compiler scons antlr3 gperf intltool mkisofs rsync swig &
+       mkdir ~/update/
+
+    - name: git
+      run: |
+       cd ~/
+       git clone -b $BRANCH --single-branch https://github.com/immortalwrt/immortalwrt lede
+       cd ~/lede/
+       ./scripts/feeds update -a
+       ./scripts/feeds install -a
+       
+    - name: config
+      if: env.SSH_ACTIONS == 'false'
+      run: |
+        cd ~/work/sshactions/sshactions
+        cp ~/work/sshactions/sshactions/$DEVICE.config ~/lede/.config
+        
+    - name: SSH connection to Actions
+      if: env.SSH_ACTIONS == 'true'
+      uses: gewplay/ssh2actions@main
+      with:
+        mode: ssh
+      env:
+        DINGTALK: ${{ secrets.DINGTALK }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        TUNNEL_HOST: ${{ secrets.TUNNEL_HOST }}
+        SSH_MODE: "cert"
+        SSH_CERT: ${{ secrets.SSH_CERT }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+        
+    - name: make
+      run: |
+       cd ~/lede
+       make defconfig
+       make download -j3
+       make -j3||make -j3 V=s||make -j1||make -j1 V=s||true
+       tar zcvf bin.tar.gz ./bin
+       mv bin.tar.gz ~/update/
+      
+    - name: Update File
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
+        path: ~/update/
