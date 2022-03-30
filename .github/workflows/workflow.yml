@@ -52,6 +52,9 @@ jobs:
         DINGTALK: ${{ secrets.DINGTALK }}
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         TUNNEL_HOST: ${{ secrets.TUNNEL_HOST }}
+        SSH_MODE: "cert"
+        SSH_CERT: ${{ secrets.SSH_CERT }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
         
     - name: make
       run: |
