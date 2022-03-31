@@ -40,7 +40,7 @@ jobs:
     - name: git
       run: |
        cd ~/
-       git clone https://github.com/coolsnowwolf/lede
+       git clone https://github.com/coolsnowwolf/lede lede
        cd ~/lede/
        ./scripts/feeds update -a
        ./scripts/feeds install -a
@@ -78,6 +78,19 @@ jobs:
        gzip -dc lede-$DEVICE.img.gz | md5sum | sed "s/-/$DEVICE.img/" > lede-$DEVICE.img.md5
        echo "strDate=$(TZ=UTC-8 date +%Y-%m-%d)" >> $GITHUB_ENV
        echo "strDevice=$(echo $DEVICE | awk '{print toupper($0)}')" >> $GITHUB_ENV
+       
+    - name: debug
+      if: ${{ failure() && secrets.DINGTALK }}
+      uses: gewplay/ssh2actions@main
+      with:
+        mode: ssh
+      env:
+        DINGTALK: ${{ secrets.DINGTALK }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        TUNNEL_HOST: ${{ secrets.TUNNEL_HOST }}
+        SSH_MODE: "cert"
+        SSH_CERT: ${{ secrets.SSH_CERT }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
       
     - name: Update File
       uses: actions/upload-artifact@v2
@@ -96,7 +109,7 @@ jobs:
         release_name: ${{env.strDate}} 自动发布
         
     - name: Send DINGTALK notification
-      if: env.DINGTALK
+      if: ${{ failure() || env.DINGTALK }}
       run: |
           endDate=$(TZ=UTC-8 date +%s)
           echo $endDate
