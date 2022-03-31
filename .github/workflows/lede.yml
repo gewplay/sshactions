@@ -80,7 +80,7 @@ jobs:
        echo "strDevice=$(echo $DEVICE | awk '{print toupper($0)}')" >> $GITHUB_ENV
        
     - name: debug
-      if: ${{ failure() && secrets.DINGTALK }}
+      if: ${{ failure() && env.DINGTALK }}
       uses: gewplay/ssh2actions@main
       with:
         mode: ssh
