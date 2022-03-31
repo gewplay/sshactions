@@ -108,8 +108,8 @@ jobs:
         overwrite: true
         release_name: ${{env.strDate}} 自动发布
         
-    - name: Send DINGTALK notification
-      if: ${{ failure() || env.DINGTALK }}
+    - name: Send DINGTALK notification 
+      if: env.DINGTALK 
       run: |
           endDate=$(TZ=UTC-8 date +%s)
           echo $endDate
@@ -118,3 +118,14 @@ jobs:
           min=$(( ( $endDate - ${{ env.strTime }} ) / 60 % 60 ))
           sec=$(( ( $endDate - ${{ env.strTime }} ) % 60 ))
           curl "https://oapi.dingtalk.com/robot/send?access_token=$DINGTALK"  -H 'Content-Type: application/json' -d "{ \"msgtype\": \"text\",\"text\": {\"content\": \"fox $DEVICE 编译成功\n开始时间：\n$(TZ=UTC-8 date --date="@${{env.strTime}}" +%Y-%m-%d-%X)\n结束时间：\n$(TZ=UTC-8 date --date="@$endDate" +%Y-%m-%d-%X)\n编译时间：$day天$hour小时$min分钟$sec秒\"} }"
+
+    - name: Send DINGTALK notification
+      if: ${{ failure() && env.DINGTALK }}
+      run: |
+          endDate=$(TZ=UTC-8 date +%s)
+          echo $endDate
+          day=$(( ( $endDate - ${{ env.strTime }} ) / (60*60*24) ))
+          hour=$(( ( $endDate - ${{ env.strTime }} ) / (60*60) ))
+          min=$(( ( $endDate - ${{ env.strTime }} ) / 60 % 60 ))
+          sec=$(( ( $endDate - ${{ env.strTime }} ) % 60 ))
+          curl "https://oapi.dingtalk.com/robot/send?access_token=$DINGTALK"  -H 'Content-Type: application/json' -d "{ \"msgtype\": \"text\",\"text\": {\"content\": \"fox $DEVICE 编译失败\n开始时间：\n$(TZ=UTC-8 date --date="@${{env.strTime}}" +%Y-%m-%d-%X)\n结束时间：\n$(TZ=UTC-8 date --date="@$endDate" +%Y-%m-%d-%X)\n编译时间：$day天$hour小时$min分钟$sec秒\"} }"
