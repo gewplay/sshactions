@@ -10,6 +10,10 @@ on:
         description: 'select device to build'
         default: 'r2s'
         required: false
+        
+env:
+  TZ: Asia/Shanghai
+        
 jobs:
   test:
     name: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
@@ -28,6 +32,10 @@ jobs:
        sudo -E apt update
        nohup sudo -E apt -y --no-install-recommends install pv jq sshpass build-essential cmake asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano python2.7 python3 python3-pip python-ply python3-ply haveged lrzsz device-tree-compiler scons antlr3 gperf intltool mkisofs rsync swig &
        mkdir ~/update/
+       echo "strTime=$(TZ=UTC-8 date +%s)" >> $GITHUB_ENV
+       echo --------------------
+       echo $(TZ=UTC-8 date +%s)
+       echo --------------------
 
     - name: git
       run: |
@@ -64,9 +72,36 @@ jobs:
        make -j3||make -j3 V=s||make -j1||make -j1 V=s||true
        tar zcvf bin.tar.gz ./bin
        mv bin.tar.gz ~/update/
+       mkdir -p $GITHUB_WORKSPACE/release
+       mv $(ls -1 ./bin/targets/*/*/*img.gz | head -1) $GITHUB_WORKSPACE/release/$DEVICE.img.gz
+       cd $GITHUB_WORKSPACE/release/ && md5sum $DEVICE.img.gz > $DEVICE.img.gz.md5
+       gzip -dc $DEVICE.img.gz | md5sum | sed "s/-/$DEVICE.img/" > $DEVICE.img.md5
+       echo "strDate=$(TZ=UTC-8 date +%Y-%m-%d)" >> $GITHUB_ENV
+       echo "strDevice=$(echo $DEVICE | awk '{print toupper($0)}')" >> $GITHUB_ENV
       
     - name: Update File
       uses: actions/upload-artifact@v2
       with:
         name: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
         path: ~/update/
+        
+    - name: Upload release asset
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./release/*
+        tag: ${{env.strDate}}
+        file_glob: true
+        overwrite: true
+        release_name: ${{env.strDate}} 自动发布
+        
+    - name: Send DINGTALK notification
+      if: env.DINGTALK
+      run: |
+          endDate=$(TZ=UTC-8 date +%s)
+          echo $endDate
+          day=$(( ( $endDate - ${{ env.strTime }} ) / (60*60*24) ))
+          hour=$(( ( $endDate - ${{ env.strTime }} ) / (60*60) ))
+          min=$(( ( $endDate - ${{ env.strTime }} ) / 60 % 60 ))
+          sec=$(( ( $endDate - ${{ env.strTime }} ) % 60 ))
+          curl "https://oapi.dingtalk.com/robot/send?access_token=$DINGTALK"  -H 'Content-Type: application/json' -d "{ \"msgtype\": \"text\",\"text\": {\"content\": \"fox $DEVICE 编译成功\n开始时间：\n$(TZ=UTC-8 date --date="@${{env.strTime}}" +%Y-%m-%d-%X)\n结束时间：\n$(TZ=UTC-8 date --date="@$endDate" +%Y-%m-%d-%X)\n编译时间：$day天$hour小时$min分钟$sec秒\"} }"
