@@ -69,7 +69,7 @@ jobs:
        cd ~/lede
        make defconfig
        make download -j3
-       $[`nproc`+1] IGNORE_ERRORS=1
+       make -j$[`nproc`+1] IGNORE_ERRORS=1
        tar zcvf bin.tar.gz ./bin
        mv bin.tar.gz ~/update/
        mkdir -p $GITHUB_WORKSPACE/release
