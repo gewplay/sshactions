@@ -21,6 +21,7 @@ jobs:
     env:
       SSH_ACTIONS: ${{ github.event.client_payload.ssh || github.event.inputs.ssh || 'false' }}
       DEVICE: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
+      DINGTALK: ${{ secrets.DINGTALK }}
       
     steps:
     - uses: actions/checkout@v1
@@ -57,7 +58,6 @@ jobs:
       with:
         mode: ssh
       env:
-        DINGTALK: ${{ secrets.DINGTALK }}
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         TUNNEL_HOST: ${{ secrets.TUNNEL_HOST }}
         SSH_MODE: "cert"
@@ -85,7 +85,6 @@ jobs:
       with:
         mode: ssh
       env:
-        DINGTALK: ${{ secrets.DINGTALK }}
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         TUNNEL_HOST: ${{ secrets.TUNNEL_HOST }}
         SSH_MODE: "cert"
