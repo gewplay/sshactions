@@ -67,6 +67,7 @@ jobs:
     - name: make
       run: |
        cd ~/lede
+       rm -rf /tmp/back
        make defconfig
        make download -j3
        make -j$[`nproc`+1] IGNORE_ERRORS=1
