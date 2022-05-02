@@ -74,7 +74,7 @@ jobs:
        tar zcvf bin.tar.gz ./bin
        mv bin.tar.gz ~/update/
        mkdir -p $GITHUB_WORKSPACE/release
-       mv $(ls -1 ./bin/targets/*/*/*img.gz | head -1) $GITHUB_WORKSPACE/release/lede-$DEVICE.img.gz || || tar -zcvf $GITHUB_WORKSPACE/release/imm-$DEVICE.bin.tar.gz $(ls -1 ./bin/targets/*/*/*bin)
+       mv $(ls -1 ./bin/targets/*/*/*img.gz | head -1) $GITHUB_WORKSPACE/release/lede-$DEVICE.img.gz || tar -zcvf $GITHUB_WORKSPACE/release/imm-$DEVICE.bin.tar.gz $(ls -1 ./bin/targets/*/*/*bin)
        #cd $GITHUB_WORKSPACE/release/ && md5sum lede-$DEVICE.img.gz > lede-$DEVICE.img.gz.md5
        #gzip -dc lede-$DEVICE.img.gz | md5sum | sed "s/-/$DEVICE.img/" > lede-$DEVICE.img.md5
        echo "strDate=$(TZ=UTC-8 date +%Y-%m-%d)" >> $GITHUB_ENV
