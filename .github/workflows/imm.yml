@@ -99,6 +99,13 @@ jobs:
         name: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
         path: ~/update/
         
+    - name: Update File
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
+        path: ~/update/
+        
     - name: Upload release asset
       uses: svenstaro/upload-release-action@v2
       with:
