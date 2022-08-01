@@ -149,7 +149,7 @@ jobs:
           hour=$(( ( $endDate - ${{ env.strTime }} ) / (60*60) ))
           min=$(( ( $endDate - ${{ env.strTime }} ) / 60 % 60 ))
           sec=$(( ( $endDate - ${{ env.strTime }} ) % 60 ))
-          curl "https://oapi.dingtalk.com/robot/send?access_token=$DINGTALK"  -H 'Content-Type: application/json' -d "{ \"msgtype\": \"text\",\"text\": {\"content\": \"fox imm-$DEVICE 编译成功\n开始时间：\n$(TZ=UTC-8 date --date="@${{env.strTime}}" +%Y-%m-%d-%X)\n结束时间：\n$(TZ=UTC-8 date --date="@$endDate" +%Y-%m-%d-%X)\n编译时间：$day天$hour小时$min分钟$sec秒\"} }"
+          curl "https://oapi.dingtalk.com/robot/send?access_token=$DINGTALK"  -H 'Content-Type: application/json' -d "{ \"msgtype\": \"text\",\"text\": {\"content\": \"fox $BRANCH-$DEVICE 编译成功\n开始时间：\n$(TZ=UTC-8 date --date="@${{env.strTime}}" +%Y-%m-%d-%X)\n结束时间：\n$(TZ=UTC-8 date --date="@$endDate" +%Y-%m-%d-%X)\n编译时间：$day天$hour小时$min分钟$sec秒\"} }"
 
     - name: Send DINGTALK notification
       if: ${{ failure() && env.DINGTALK }}
@@ -160,4 +160,4 @@ jobs:
           hour=$(( ( $endDate - ${{ env.strTime }} ) / (60*60) ))
           min=$(( ( $endDate - ${{ env.strTime }} ) / 60 % 60 ))
           sec=$(( ( $endDate - ${{ env.strTime }} ) % 60 ))
-          curl "https://oapi.dingtalk.com/robot/send?access_token=$DINGTALK"  -H 'Content-Type: application/json' -d "{ \"msgtype\": \"text\",\"text\": {\"content\": \"fox imm-$DEVICE 编译失败\n开始时间：\n$(TZ=UTC-8 date --date="@${{env.strTime}}" +%Y-%m-%d-%X)\n结束时间：\n$(TZ=UTC-8 date --date="@$endDate" +%Y-%m-%d-%X)\n编译时间：$day天$hour小时$min分钟$sec秒\"} }"
+          curl "https://oapi.dingtalk.com/robot/send?access_token=$DINGTALK"  -H 'Content-Type: application/json' -d "{ \"msgtype\": \"text\",\"text\": {\"content\": \"fox $BRANCH-$DEVICE 编译失败\n开始时间：\n$(TZ=UTC-8 date --date="@${{env.strTime}}" +%Y-%m-%d-%X)\n结束时间：\n$(TZ=UTC-8 date --date="@$endDate" +%Y-%m-%d-%X)\n编译时间：$day天$hour小时$min分钟$sec秒\"} }"
