@@ -8,8 +8,8 @@ on:
         required: true
         type: choice
         options:
-          - true
-          - false
+          - 'true'
+          - 'false'
       device:
         description: 'select device to build'
         default: 'r2s'
