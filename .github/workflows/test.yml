@@ -31,7 +31,7 @@ env:
 jobs:
   test:
     name: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       SSH_ACTIONS: ${{ github.event.client_payload.ssh || github.event.inputs.ssh || 'false' }}
       DEVICE: ${{ github.event.client_payload.device || github.event.inputs.device || 'x86'}}
