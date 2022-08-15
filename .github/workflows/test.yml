@@ -114,7 +114,7 @@ jobs:
        cat .config
        make defconfig
        make download -j3
-       make -j$[`nproc`+1] IGNORE_ERRORS=1
+       make -j$[`nproc`+1] IGNORE_ERRORS=1 || make -j$[`nproc`+1] || make -j1 V=s
        tar zcvf bin.tar.gz ./bin
        cp -af bin.tar.gz ~/update/
        mkdir -p $GITHUB_WORKSPACE/release
@@ -132,14 +132,14 @@ jobs:
       if: ${{ failure() && env.DINGTALK }}
       uses: gewplay/ssh2actions@main
       with:
-        mode: ssh
-      env:
-        DINGTALK: ${{ secrets.DINGTALK }}
-        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-        TUNNEL_HOST: ${{ secrets.TUNNEL_HOST }}
-        SSH_MODE: "cert"
-        SSH_CERT: ${{ secrets.SSH_CERT }}
-        SSH_PORT: ${{ secrets.SSH_PORT }}
+        mode: tmate
+      #env:
+        #DINGTALK: ${{ secrets.DINGTALK }}
+        #SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        #TUNNEL_HOST: ${{ secrets.TUNNEL_HOST }}
+        #SSH_MODE: "cert"
+        #SSH_CERT: ${{ secrets.SSH_CERT }}
+        #SSH_PORT: ${{ secrets.SSH_PORT }}
       
     - name: Update File
       uses: actions/upload-artifact@v2
