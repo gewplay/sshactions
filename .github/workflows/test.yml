@@ -93,7 +93,7 @@ jobs:
       if: env.SSH_ACTIONS == 'false'
       run: |
         cd ~/work/sshactions/sshactions
-        cp ~/work/sshactions/sshactions/$DEVICE.im.config ~/lede/.config
+        cp ~/work/sshactions/sshactions/$DEVICE.config ~/lede/.config
         
     - name: SSH connection to Actions
       if: env.SSH_ACTIONS == 'true'
@@ -116,9 +116,13 @@ jobs:
        make download -j3
        make -j$[`nproc`+1] IGNORE_ERRORS=1
        tar zcvf bin.tar.gz ./bin
-       mv bin.tar.gz ~/update/
+       cp -af bin.tar.gz ~/update/
        mkdir -p $GITHUB_WORKSPACE/release
        mv $(ls -1 ./bin/targets/*/*/*img.gz | head -1) $GITHUB_WORKSPACE/release/$BRANCH-$DEVICE.img.gz || tar -zcvf $GITHUB_WORKSPACE/release/$BRANCH-$DEVICE.bin.tar.gz $(ls -1 ./bin/targets/*/*/*bin)
+       rm -rf ./bin/targets/*/*/*img.gz 
+       rm -rf ./bin/targets/*/*/*bin
+       tar -zcvf $GITHUB_WORKSPACE/release/$BRANCH-$DEVICE.packages.tar.gz ./bin/*
+       cp -af bin.tar.gz $GITHUB_WORKSPACE/release/$BRANCH-$DEVICE.full.tar.gz
        #cd $GITHUB_WORKSPACE/release/ && md5sum imm-$DEVICE.img.gz > imm-$DEVICE.img.gz.md5
        #gzip -dc imm-$DEVICE.img.gz | md5sum | sed "s/-/$DEVICE.img/" > imm-$DEVICE.img.md5
        echo "strDate=$(TZ=UTC-8 date +%Y-%m-%d)" >> $GITHUB_ENV
