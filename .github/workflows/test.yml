@@ -22,6 +22,7 @@ on:
         options:
           - lede
           - immortalwrt
+          - lede-17.01
           - openwrt-18.06
           - openwrt-22.03
         
@@ -67,6 +68,15 @@ jobs:
       run: |
        cd ~/
        git clone https://github.com/coolsnowwolf/lede lede
+       cd ~/lede/
+       ./scripts/feeds update -a
+       ./scripts/feeds install -a
+       
+    - name: git lede-17.01
+      if: env.BRANCH == 'lede'
+      run: |
+       cd ~/
+       git clone -b lede-17.01 https://github.com/openwrt/openwrt lede
        cd ~/lede/
        ./scripts/feeds update -a
        ./scripts/feeds install -a
