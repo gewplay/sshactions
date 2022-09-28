@@ -24,6 +24,7 @@ on:
           - immortalwrt
           - lede-17.01
           - openwrt-18.06
+          - openwrt-19.07
           - openwrt-22.03
         
 env:
@@ -77,6 +78,15 @@ jobs:
       run: |
        cd ~/
        git clone -b lede-17.01 https://github.com/openwrt/openwrt lede
+       cd ~/lede/
+       ./scripts/feeds update -a
+       ./scripts/feeds install -a
+       
+    - name: git openwrt-19.07
+      if: env.BRANCH == 'openwrt-19.07'
+      run: |
+       cd ~/
+       git clone -b openwrt-19.07 https://github.com/openwrt/openwrt lede
        cd ~/lede/
        ./scripts/feeds update -a
        ./scripts/feeds install -a
