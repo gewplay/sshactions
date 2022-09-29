@@ -193,6 +193,17 @@ jobs:
         overwrite: true
         release_name: ${{env.strDate}} 自动发布
         
+    - name: Upload release asset
+      if: ${{ failure() }}
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./release/*
+        tag: ${{env.strDate}}
+        file_glob: true
+        overwrite: true
+        release_name: ${{env.strDate}} 自动发布
+        
     - name: Send DINGTALK notification 
       if: env.DINGTALK 
       run: |
