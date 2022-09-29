@@ -21,7 +21,8 @@ on:
         type: choice
         options:
           - lede
-          - immortalwrt
+          - immortalwrt-21.02
+          - immortalwrt-18.06
           - lede-17.01
           - openwrt-18.06
           - openwrt-19.07
@@ -55,11 +56,20 @@ jobs:
        echo $(TZ=UTC-8 date +%s)
        echo --------------------
 
-    - name: git immortalwrt
-      if: env.BRANCH == 'immortalwrt'
+    - name: git immortalwrt-21.02
+      if: env.BRANCH == 'immortalwrt-21.02'
       run: |
        cd ~/
        git clone -b openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt lede
+       cd ~/lede/
+       ./scripts/feeds update -a
+       ./scripts/feeds install -a
+       
+    - name: git immortalwrt-18.06
+      if: env.BRANCH == 'immortalwrt-18.06'
+      run: |
+       cd ~/
+       git clone -b openwrt-18.06 --single-branch https://github.com/immortalwrt/immortalwrt lede
        cd ~/lede/
        ./scripts/feeds update -a
        ./scripts/feeds install -a
