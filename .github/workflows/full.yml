@@ -1,4 +1,4 @@
-name: test
+name: full
 on: 
   workflow_dispatch:
     inputs:
@@ -21,11 +21,11 @@ on:
         type: choice
         options:
           - lede
+          - immortalwrt
           - immortalwrt-21.02
           - immortalwrt-18.06
-          - lede-17.01
-          - openwrt-18.06
           - openwrt-19.07
+          - openwrt-21.02
           - openwrt-22.03
         
 env:
@@ -56,6 +56,24 @@ jobs:
        echo $(TZ=UTC-8 date +%s)
        echo --------------------
 
+    - name: git lede
+      if: env.BRANCH == 'lede'
+      run: |
+       cd ~/
+       git clone https://github.com/coolsnowwolf/lede lede
+       cd ~/lede/
+       ./scripts/feeds update -a
+       ./scripts/feeds install -a
+       
+    - name: git immortalwrt
+      if: env.BRANCH == 'immortalwrt'
+      run: |
+       cd ~/
+       git clone https://github.com/immortalwrt/immortalwrt lede
+       cd ~/lede/
+       ./scripts/feeds update -a
+       ./scripts/feeds install -a
+       
     - name: git immortalwrt-21.02
       if: env.BRANCH == 'immortalwrt-21.02'
       run: |
@@ -74,24 +92,6 @@ jobs:
        ./scripts/feeds update -a
        ./scripts/feeds install -a
        
-    - name: git lede
-      if: env.BRANCH == 'lede'
-      run: |
-       cd ~/
-       git clone https://github.com/coolsnowwolf/lede lede
-       cd ~/lede/
-       ./scripts/feeds update -a
-       ./scripts/feeds install -a
-       
-    - name: git lede-17.01
-      if: env.BRANCH == 'lede'
-      run: |
-       cd ~/
-       git clone -b lede-17.01 https://github.com/openwrt/openwrt lede
-       cd ~/lede/
-       ./scripts/feeds update -a
-       ./scripts/feeds install -a
-       
     - name: git openwrt-19.07
       if: env.BRANCH == 'openwrt-19.07'
       run: |
@@ -101,11 +101,11 @@ jobs:
        ./scripts/feeds update -a
        ./scripts/feeds install -a
        
-    - name: git openwrt-18.06
-      if: env.BRANCH == 'openwrt-18.06'
+    - name: git openwrt-21.02
+      if: env.BRANCH == 'openwrt-21.02'
       run: |
        cd ~/
-       git clone -b openwrt-18.06 https://github.com/openwrt/openwrt lede
+       git clone -b openwrt-21.02 https://github.com/openwrt/openwrt lede
        cd ~/lede/
        ./scripts/feeds update -a
        ./scripts/feeds install -a
@@ -118,7 +118,7 @@ jobs:
        cd ~/lede/
        ./scripts/feeds update -a
        ./scripts/feeds install -a
-       
+      
     - name: config
       if: env.SSH_ACTIONS == 'false'
       run: |
